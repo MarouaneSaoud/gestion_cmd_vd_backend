@@ -1,5 +1,6 @@
 package com.veri_delice.gestion_cmd_vd_backend.dao.entities;
 
+import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.Payment;
 import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,7 +9,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Data @NoArgsConstructor @AllArgsConstructor
@@ -29,5 +29,10 @@ public class Command {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @Enumerated(EnumType.STRING)
+    private Payment payment;
+    private Double avance;
+
 
 }
