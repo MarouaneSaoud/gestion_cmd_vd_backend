@@ -4,6 +4,7 @@ import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.Payment;
 import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -11,6 +12,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.util.Date;
 
 @Entity
+@Builder
 @Data @NoArgsConstructor @AllArgsConstructor
 public class Command {
     @Id
@@ -25,6 +27,7 @@ public class Command {
 
     @CreationTimestamp
     private Date dateCommand;
+
     private Date dateDelivery;
 
     @Enumerated(EnumType.STRING)
@@ -32,7 +35,8 @@ public class Command {
 
     @Enumerated(EnumType.STRING)
     private Payment payment;
-    private Double avance;
+
+    private Double advance;
 
 
 }
