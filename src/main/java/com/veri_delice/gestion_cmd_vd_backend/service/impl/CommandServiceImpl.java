@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -45,70 +44,47 @@ public class CommandServiceImpl implements CommandService {
 
     @Override
     public CommandDto command(ToOrderDto toOrderDto) {
-        Client client = clientRepository.findById(toOrderDto.getIdClient())
-                .orElseThrow(() -> new BusinessException("Le client avec l'ID spécifié n'existe pas."));
-
-        validateProducts(toOrderDto.getItems().keySet());
-
-        try {
-            Command command = buildCommandFromDto(client, toOrderDto);
-            double total = calculateTotalPrice(toOrderDto.getItems(), command.getProductCommands());
-            updatePaymentStatus(command, total);
-
-            return commandMapper.toDto(commandRepository.save(command));
-
-        } catch (Exception e) {
-            throw new TechnicalException("Une erreur s'est produite lors de la création de la commande : " + e.getMessage());
-        }
-    }
-
-    private void validateProducts(Set<String> productIds) {
+        Client client = clientRepository.findById(toOrderDto.getIdClient()).orElseThrow(() -> new BusinessException("Le client avec l'ID spécifié n'existe pas."));
+        Set<String> productIds = toOrderDto.getItems().keySet();
         List<Product> products = productRepository.findAllById(productIds);
 
         if (products.size() != productIds.size()) {
             throw new BusinessException("Certains produits spécifiés n'existent pas.");
         }
-    }
 
-    private Command buildCommandFromDto(Client client, ToOrderDto toOrderDto) {
-        return Command.builder()
-                .id(UUID.randomUUID().toString())
-                .description(toOrderDto.getDescription())
-                .status(Status.IN_PROGRESS)
-                .advance(toOrderDto.getAdvance())
-                .client(client)
-                .dateDelivery(toOrderDto.getDateDelivery())
-                .productCommands(buildProductCommands(toOrderDto.getItems()))
-                .build();
-    }
+        try {
+            Command command = Command.builder()
+                    .id(UUID.randomUUID().toString())
+                    .description(toOrderDto.getDescription())
+                    .status(Status.IN_PROGRESS)
+                    .advance(toOrderDto.getAdvance())
+                    .client(client)
+                    .dateDelivery(toOrderDto.getDateDelivery())
+                    .build();
+            double total = 0.0;
+            List<ProductCommand> productCommands = products.stream()
+                    .map(product -> {
+                        int quantity = toOrderDto.getItems().get(product.getId());
+                        ProductCommand productCommand = new ProductCommand();
+                        productCommand.setQte(quantity);
+                        productCommand.setProduct(product);
+                        productCommand.setCommand(command);
+                        return productCommand;
+                    }).toList();
+             total = productCommands.stream()
+                    .mapToDouble(productCommand -> productCommand.getProduct().getPrice() * productCommand.getQte())
+                    .sum();
+            command.setPayment((total == command.getAdvance()) ? Payment.PAY : (total != 0.0 && total > command.getAdvance()) ? Payment.ADVANCE : (command.getAdvance() == 0.0) ? Payment.NO_PAY : null);
 
-    private List<ProductCommand> buildProductCommands(Map<String, Integer> items) {
-        return items.entrySet().stream()
-                .map(entry -> {
-                    Product product = productRepository.findById(entry.getKey())
-                            .orElseThrow(() -> new BusinessException("Le produit avec l'ID spécifié n'existe pas."));
-                    int quantity = entry.getValue();
+            command.setProductCommands(productCommands);
 
-                    ProductCommand productCommand = new ProductCommand();
-                    productCommand.setQte(quantity);
-                    productCommand.setProduct(product);
+            return commandMapper.toDto(commandRepository.save(command));
 
-                    return productCommand;
-                })
-                .toList();
-    }
+        } catch (Exception e) {
+            throw new TechnicalException("Une erreur s'est produite lors de la création de la commande : " + e.getMessage());
 
-    private double calculateTotalPrice(Map<String, Integer> items, List<ProductCommand> productCommands) {
-        return productCommands.stream()
-                .mapToDouble(productCommand ->
-                        productCommand.getProduct().getPrice() * productCommand.getQte())
-                .sum();
-    }
+        }
 
-    private void updatePaymentStatus(Command command, double total) {
-        command.setPayment((total == command.getAdvance()) ? Payment.PAY :
-                (total != 0.0 && total > command.getAdvance()) ? Payment.ADVANCE :
-                        (command.getAdvance() == 0.0) ? Payment.NO_PAY : null);
     }
 
 }
