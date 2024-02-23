@@ -1,7 +1,9 @@
 package com.veri_delice.gestion_cmd_vd_backend;
 
+import com.veri_delice.gestion_cmd_vd_backend.dao.entities.Client;
 import com.veri_delice.gestion_cmd_vd_backend.dao.entities.Product;
 import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.UniteProd;
+import com.veri_delice.gestion_cmd_vd_backend.dao.repo.ClientRepository;
 import com.veri_delice.gestion_cmd_vd_backend.dao.repo.ProductRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -17,7 +19,9 @@ public class GestionCmdVdBackendApplication {
         SpringApplication.run(GestionCmdVdBackendApplication.class, args);
     }
     @Bean
-    CommandLineRunner commandLineRunner(ProductRepository productRepository){
+    CommandLineRunner commandLineRunner(
+            ProductRepository productRepository,
+            ClientRepository clientRepository){
         return args -> {
             Product product = Product.builder()
                     .id(UUID.randomUUID().toString())
@@ -28,7 +32,14 @@ public class GestionCmdVdBackendApplication {
                     .build();
 
             productRepository.save(product);
-
+            Client client = Client.builder()
+                    .id(UUID.randomUUID().toString())
+                    .address("hay chrifa")
+                    .name("marouane")
+                    .lastName("souad")
+                    .numberPhone("0622686318")
+                    .build();
+            clientRepository.save(client);
         };
     }
 }

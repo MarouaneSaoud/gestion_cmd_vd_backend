@@ -15,5 +15,4 @@ public class ClientDto {
     private String lastName;
     private String numberPhone;
     private String address;
-    private List<CommandDto> commands;
 }

@@ -1,14 +1,17 @@
 package com.veri_delice.gestion_cmd_vd_backend.dto.command;
 
 import com.veri_delice.gestion_cmd_vd_backend.dao.entities.Client;
+import com.veri_delice.gestion_cmd_vd_backend.dao.entities.ProductCommand;
 import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.Payment;
 import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.Status;
 import com.veri_delice.gestion_cmd_vd_backend.dto.client.ClientDto;
+import com.veri_delice.gestion_cmd_vd_backend.dto.productCommand.ProductCommandDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -22,4 +25,5 @@ public class CommandDto {
     private Status status;
     private Payment payment;
     private Double advance;
+    private List<ProductCommandDto> productCommandDtos;
 }

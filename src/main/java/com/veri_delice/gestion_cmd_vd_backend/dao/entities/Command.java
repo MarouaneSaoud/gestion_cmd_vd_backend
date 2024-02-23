@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Builder
@@ -38,5 +39,7 @@ public class Command {
 
     private Double advance;
 
+    @OneToMany(mappedBy = "command")
+    private List<ProductCommand> productCommands;
 
 }
