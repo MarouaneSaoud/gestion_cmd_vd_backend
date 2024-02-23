@@ -1,5 +1,6 @@
 package com.veri_delice.gestion_cmd_vd_backend.dao.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.Payment;
 import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.Status;
 import jakarta.persistence.*;
@@ -40,6 +41,7 @@ public class Command {
     private Double advance;
 
     @OneToMany(mappedBy = "command", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonManagedReference
     private List<ProductCommand> productCommands;
 
 }

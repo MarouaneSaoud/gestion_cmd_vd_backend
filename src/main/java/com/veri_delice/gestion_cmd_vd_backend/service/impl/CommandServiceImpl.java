@@ -87,4 +87,23 @@ public class CommandServiceImpl implements CommandService {
 
     }
 
+    @Override
+    public CommandDto getCommandById(String commandId) {
+        Command command = commandRepository.findById(commandId)
+                .orElseThrow(() -> new BusinessException("La commande avec l'ID spécifié n'existe pas."));
+        return commandMapper.toFullDto(command);
+    }
+
+    @Override
+    public List<CommandDto> getAllCommand() {
+        List<Command> allCommands = commandRepository.findAll();
+        return allCommands.stream()
+                .map(command -> {
+                    return commandMapper.toFullDto(command);
+                })
+                        .collect(Collectors.toList());
+
+    }
+
+
 }

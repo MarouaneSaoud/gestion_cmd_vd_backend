@@ -18,25 +18,27 @@ public class CommandMapper {
     private ModelMapperConfig modelMapperConfig;
 
     public CommandDto toDto(Command command) {
-
         CommandDto map = modelMapperConfig.modelMapper().map(command, CommandDto.class);
-        if (command.getClient() != null) {
-            ClientDto clientDto = modelMapperConfig.modelMapper().map(command.getClient(), ClientDto.class);
-            map.setClientDto(clientDto);
-        }
-        if (command.getProductCommands() != null) {
-
-            List<ProductCommandDto> productCommandDto = command.getProductCommands().stream()
-                    .map(productCommand ->
-                            modelMapperConfig.modelMapper().map(productCommand, ProductCommandDto.class))
-                    .collect(Collectors.toList());
-            map.setProductCommandDtos(productCommandDto);
-        }
         return map;
     }
-
-    public Command toEntity(CommandDto commandDto) {
-        return modelMapperConfig.modelMapper().map(commandDto, Command.class);
+    public Command toEntity(CommandDto commandDto){
+        return modelMapperConfig.modelMapper().map(commandDto,Command.class);
     }
+    public CommandDto toFullDto(Command command) {
+        CommandDto fullDto = toDto(command);
+        if (command.getClient() != null) {
+            ClientDto clientDto = modelMapperConfig.modelMapper().map(command.getClient(), ClientDto.class);
+            fullDto.setClientDto(clientDto);
+        }
+        if (command.getProductCommands() != null && !command.getProductCommands().isEmpty()) {
+            List<ProductCommandDto> productCommandDtos = command.getProductCommands().stream()
+                    .map(productCommand -> modelMapperConfig.modelMapper().map(productCommand, ProductCommandDto.class))
+                    .collect(Collectors.toList());
+            fullDto.setProductCommandDtos(productCommandDtos);
+        }
+
+        return fullDto;
+    }
+
 
 }

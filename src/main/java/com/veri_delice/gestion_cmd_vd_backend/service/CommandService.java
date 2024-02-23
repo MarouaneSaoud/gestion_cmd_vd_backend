@@ -9,4 +9,8 @@ import java.util.List;
 public interface CommandService {
    public List<Command> getAll();
    public CommandDto command(ToOrderDto toOrderDto);
+   public CommandDto getCommandById(String commandId);
+   public List<CommandDto> getAllCommand();
+
+
 }

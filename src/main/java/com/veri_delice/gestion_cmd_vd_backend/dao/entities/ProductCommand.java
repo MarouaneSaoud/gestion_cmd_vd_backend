@@ -1,5 +1,6 @@
 package com.veri_delice.gestion_cmd_vd_backend.dao.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class ProductCommand {
 
     @ManyToOne
     @JoinColumn(name = "command_id")
+    @JsonManagedReference
     private Command command;
 
     @ManyToOne

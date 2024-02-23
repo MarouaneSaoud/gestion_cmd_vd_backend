@@ -12,6 +12,5 @@ import lombok.NoArgsConstructor;
 public class ProductCommandDto {
     private Long id;
     private Integer qte;
-    private CommandDto command;
     private ProductDTO product;
 }
