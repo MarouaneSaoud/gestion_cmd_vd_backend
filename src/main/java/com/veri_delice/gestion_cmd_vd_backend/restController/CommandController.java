@@ -19,12 +19,13 @@ public class CommandController {
     private CommandService commandService;
 
     @PostMapping("/order")
-    public CommandDto order(@RequestBody ToOrderDto toOrderDto){
+    public CommandDto order(@RequestBody ToOrderDto toOrderDto) {
         return commandService.command(toOrderDto);
     }
+
     @GetMapping("/all")
-    public List<Command> getAll(){
-        return  commandService.getAll();
+    public List<Command> getAll() {
+        return commandService.getAll();
     }
 
 

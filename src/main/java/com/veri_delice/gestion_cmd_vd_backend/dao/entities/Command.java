@@ -39,7 +39,7 @@ public class Command {
 
     private Double advance;
 
-    @OneToMany(mappedBy = "command")
+    @OneToMany(mappedBy = "command", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<ProductCommand> productCommands;
 
 }

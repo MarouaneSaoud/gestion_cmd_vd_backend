@@ -70,15 +70,15 @@ public class CommandServiceImpl implements CommandService {
                         productCommand.setProduct(product);
                         productCommand.setCommand(command);
                         return productCommand;
-                    }).collect(Collectors.toList());
+                    }).toList();
              total = productCommands.stream()
                     .mapToDouble(productCommand -> productCommand.getProduct().getPrice() * productCommand.getQte())
                     .sum();
             command.setPayment((total == command.getAdvance()) ? Payment.PAY : (total != 0.0 && total > command.getAdvance()) ? Payment.ADVANCE : (command.getAdvance() == 0.0) ? Payment.NO_PAY : null);
 
-            Command c = commandRepository.save(command);
-            productCommandRepository.saveAll(productCommands);
-            return commandMapper.toDto(c);
+            command.setProductCommands(productCommands);
+
+            return commandMapper.toDto(commandRepository.save(command));
 
         } catch (Exception e) {
             throw new TechnicalException("Une erreur s'est produite lors de la création de la commande : " + e.getMessage());
