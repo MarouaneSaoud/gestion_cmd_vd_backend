@@ -112,11 +112,10 @@ public class CommandServiceImpl implements CommandService {
         else return false;
     }
 
-    @Override
     public CommandDto updateCommand(UpdateCommandDto updateCommandDto) {
         Command c = commandRepository.findById(updateCommandDto.getId()).orElse(null);
         if (c!=null){
-            Command savedCommand = commandRepository.save(commandMapper.toUpdate(updateCommandDto));
+            Command savedCommand = commandRepository.save(commandMapper.toUpdate(updateCommandDto,c));
             return commandMapper.toDto(savedCommand);
         }
         return null;
