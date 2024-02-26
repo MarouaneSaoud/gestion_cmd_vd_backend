@@ -114,8 +114,16 @@ public class CommandServiceImpl implements CommandService {
 
     public CommandDto updateCommand(UpdateCommandDto updateCommandDto) {
         Command c = commandRepository.findById(updateCommandDto.getId()).orElse(null);
+
         if (c!=null){
+            double total=0.0;
+            total = c.getProductCommands().stream()
+                    .mapToDouble(productCommand -> productCommand.getProduct().getPrice() * productCommand.getQte())
+                    .sum();
+            c.setPayment((total == c.getAdvance()) ? Payment.PAY : (total != 0.0 && total > c.getAdvance()) ? Payment.ADVANCE : (c.getAdvance() == 0.0) ? Payment.NO_PAY : null);
+
             Command savedCommand = commandRepository.save(commandMapper.toUpdate(updateCommandDto,c));
+
             return commandMapper.toDto(savedCommand);
         }
         return null;
