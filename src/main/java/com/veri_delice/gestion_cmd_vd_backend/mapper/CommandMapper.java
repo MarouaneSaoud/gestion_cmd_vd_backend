@@ -4,6 +4,7 @@ import com.veri_delice.gestion_cmd_vd_backend.config.ModelMapperConfig;
 import com.veri_delice.gestion_cmd_vd_backend.dao.entities.Command;
 import com.veri_delice.gestion_cmd_vd_backend.dto.client.ClientDto;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.CommandDto;
+import com.veri_delice.gestion_cmd_vd_backend.dto.command.UpdateCommandDto;
 import com.veri_delice.gestion_cmd_vd_backend.dto.productCommand.ProductCommandDto;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -39,6 +40,9 @@ public class CommandMapper {
 
         return fullDto;
     }
+    public Command toUpdate(UpdateCommandDto updateCommandDto){
+        return modelMapperConfig.modelMapper().map(updateCommandDto,Command.class);
 
+    }
 
 }

@@ -3,6 +3,7 @@ package com.veri_delice.gestion_cmd_vd_backend.restController;
 import com.veri_delice.gestion_cmd_vd_backend.dao.entities.Command;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.CommandDto;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.ToOrderDto;
+import com.veri_delice.gestion_cmd_vd_backend.dto.command.UpdateCommandDto;
 import com.veri_delice.gestion_cmd_vd_backend.service.CommandService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,12 +25,6 @@ public class CommandController {
         return commandService.command(toOrderDto);
     }
 
-
-    @GetMapping("/all")
-    public List<Command> getAll() {
-        return commandService.getAll();
-    }
-
     @GetMapping("/{commandId}/details")
     public CommandDto getCommandDetails(@PathVariable String commandId) {
         return commandService.getCommandById(commandId);
@@ -37,6 +32,11 @@ public class CommandController {
     @GetMapping("/AllCommands")
     public List<CommandDto> getAllCommands() {
         return commandService.getAllCommand();
+    }
+
+    @PutMapping("/updateOrder")
+    public CommandDto updateOrder(@RequestBody UpdateCommandDto updateCommandDto){
+        return commandService.updateCommand(updateCommandDto);
     }
 
 }

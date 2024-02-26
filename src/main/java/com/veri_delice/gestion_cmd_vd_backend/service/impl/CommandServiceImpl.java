@@ -12,6 +12,7 @@ import com.veri_delice.gestion_cmd_vd_backend.dao.repo.ProductCommandRepository;
 import com.veri_delice.gestion_cmd_vd_backend.dao.repo.ProductRepository;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.CommandDto;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.ToOrderDto;
+import com.veri_delice.gestion_cmd_vd_backend.dto.command.UpdateCommandDto;
 import com.veri_delice.gestion_cmd_vd_backend.exception.error.BusinessException;
 import com.veri_delice.gestion_cmd_vd_backend.exception.error.TechnicalException;
 import com.veri_delice.gestion_cmd_vd_backend.mapper.CommandMapper;
@@ -23,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -37,10 +37,6 @@ public class CommandServiceImpl implements CommandService {
     private final ProductCommandRepository productCommandRepository;
 
 
-    @Override
-    public List<Command> getAll() {
-        return commandRepository.findAll();
-    }
 
     @Override
     public CommandDto command(ToOrderDto toOrderDto) {
@@ -97,12 +93,55 @@ public class CommandServiceImpl implements CommandService {
     @Override
     public List<CommandDto> getAllCommand() {
         List<Command> allCommands = commandRepository.findAll();
-        return allCommands.stream()
+        List<CommandDto> commandDtos = allCommands.stream()
                 .map(command -> {
                     return commandMapper.toFullDto(command);
                 })
-                        .collect(Collectors.toList());
+                .toList();
+        return commandDtos;
 
+    }
+
+    @Override
+    public Boolean deleteCommand(String id) {
+        Command command=commandRepository.findById(id).orElse(null);
+        if (command!=null) {
+            commandRepository.deleteById(id);
+            return true;
+        }
+        else return false;
+    }
+
+    @Override
+    public CommandDto updateCommand(UpdateCommandDto updateCommandDto) {
+        Command c = commandRepository.findById(updateCommandDto.getId()).orElse(null);
+        if (c!=null){
+            Command savedCommand = commandRepository.save(commandMapper.toUpdate(updateCommandDto));
+            return commandMapper.toDto(savedCommand);
+        }
+        return null;
+    }
+
+    @Override
+    public Boolean cancelCommand(String id) {
+        Command command=commandRepository.findById(id).orElse(null);
+        if (command!=null) {
+            command.setStatus(Status.CANCEL);
+            commandRepository.save(command);
+            return true;
+        }
+        else return false;
+    }
+
+    @Override
+    public Boolean deliveryCommand(String id) {
+        Command command=commandRepository.findById(id).orElse(null);
+        if (command!=null) {
+            command.setStatus(Status.DELIVERY);
+            commandRepository.save(command);
+            return true;
+        }
+        else return false;
     }
 
 
