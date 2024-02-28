@@ -37,7 +37,6 @@ public class CommandServiceImpl implements CommandService {
     private final ProductRepository productRepository;
     private final CommandMapper commandMapper;
     private final ClientRepository clientRepository;
-    private final ProductCommandRepository productCommandRepository;
 
 
 
