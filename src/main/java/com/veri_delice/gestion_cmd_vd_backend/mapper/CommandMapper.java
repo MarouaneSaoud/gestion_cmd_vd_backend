@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 public class CommandMapper {
 
     private ModelMapperConfig modelMapperConfig;
-    private CommandRepository commandRepository;
 
     public CommandDto toDto(Command command) {
         CommandDto map = modelMapperConfig.modelMapper().map(command, CommandDto.class);

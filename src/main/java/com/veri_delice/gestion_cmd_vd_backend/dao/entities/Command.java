@@ -40,6 +40,8 @@ public class Command {
 
     private Double advance;
 
+    private Double total;
+
     @OneToMany(mappedBy = "command", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonManagedReference
     private List<ProductCommand> productCommands;

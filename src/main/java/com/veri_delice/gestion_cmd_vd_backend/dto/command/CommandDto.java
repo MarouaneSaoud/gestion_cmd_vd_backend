@@ -25,5 +25,6 @@ public class CommandDto {
     private Status status;
     private Payment payment;
     private Double advance;
+    private Double total;
     private List<ProductCommandDto> productCommandDtos;
 }

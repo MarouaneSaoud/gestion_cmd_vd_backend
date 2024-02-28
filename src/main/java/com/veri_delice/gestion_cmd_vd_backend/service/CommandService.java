@@ -9,9 +9,9 @@ public interface CommandService {
     CommandDto command(ToOrderDto toOrderDto);
     CommandDto getCommandById(String commandId);
     List<CommandDto> getAllCommand();
-    Boolean deleteCommand(String id);
     CommandDto updateCommand(UpdateCommandDto updateCommandDto);
     Boolean cancelCommand(String id);
     Boolean deliveryCommand(String id);
+    Boolean paymentStatus(String id);
 
 }

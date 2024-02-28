@@ -56,6 +56,8 @@ public class GestionCmdVdBackendApplication {
             toOrderDto.setDateDelivery(new Date());
             toOrderDto.setItems(Map.of(product.getId(), 2));
             commandService.command(toOrderDto);
+
+
         };
 
     }

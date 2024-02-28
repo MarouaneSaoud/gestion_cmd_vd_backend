@@ -18,9 +18,11 @@ import com.veri_delice.gestion_cmd_vd_backend.exception.error.TechnicalException
 import com.veri_delice.gestion_cmd_vd_backend.mapper.CommandMapper;
 import com.veri_delice.gestion_cmd_vd_backend.service.CommandService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -28,6 +30,7 @@ import java.util.UUID;
 @Service
 @Transactional
 @AllArgsConstructor
+@Slf4j
 public class CommandServiceImpl implements CommandService {
 
     private final CommandRepository commandRepository;
@@ -71,16 +74,14 @@ public class CommandServiceImpl implements CommandService {
                     .mapToDouble(productCommand -> productCommand.getProduct().getPrice() * productCommand.getQte())
                     .sum();
             command.setPayment((total == command.getAdvance()) ? Payment.PAY : (total != 0.0 && total > command.getAdvance()) ? Payment.ADVANCE : (command.getAdvance() == 0.0) ? Payment.NO_PAY : null);
-
+            command.setTotal(total);
             command.setProductCommands(productCommands);
 
             return commandMapper.toDto(commandRepository.save(command));
 
         } catch (Exception e) {
             throw new TechnicalException("Une erreur s'est produite lors de la création de la commande : " + e.getMessage());
-
         }
-
     }
 
     @Override
@@ -93,37 +94,48 @@ public class CommandServiceImpl implements CommandService {
     @Override
     public List<CommandDto> getAllCommand() {
         List<Command> allCommands = commandRepository.findAll();
-        List<CommandDto> commandDtos = allCommands.stream()
+        return  allCommands.stream()
                 .map(command -> {
                     return commandMapper.toFullDto(command);
                 })
+                .sorted(Comparator.comparing(CommandDto::getDateCommand))
                 .toList();
-        return commandDtos;
+
 
     }
 
-    @Override
-    public Boolean deleteCommand(String id) {
-        Command command=commandRepository.findById(id).orElse(null);
-        if (command!=null) {
-            commandRepository.deleteById(id);
-            return true;
-        }
-        else return false;
-    }
 
     public CommandDto updateCommand(UpdateCommandDto updateCommandDto) {
         Command c = commandRepository.findById(updateCommandDto.getId()).orElse(null);
-
         if (c!=null){
-            double total=0.0;
-            total = c.getProductCommands().stream()
-                    .mapToDouble(productCommand -> productCommand.getProduct().getPrice() * productCommand.getQte())
-                    .sum();
-            c.setPayment((total == c.getAdvance()) ? Payment.PAY : (total != 0.0 && total > c.getAdvance()) ? Payment.ADVANCE : (c.getAdvance() == 0.0) ? Payment.NO_PAY : null);
+            if (!updateCommandDto.getItems().isEmpty()){
+                Set<String> productIds = updateCommandDto.getItems().keySet();
+                List<Product> products = productRepository.findAllById(productIds);
+                if (products.size() != productIds.size()) {
+                    throw new BusinessException("Certains produits spécifiés n'existent pas.");
+                }
+                else{
+                    List<ProductCommand> productCommands = products.stream()
+                            .map(product -> {
+                                int quantity = updateCommandDto.getItems().get(product.getId());
+                                ProductCommand productCommand = new ProductCommand();
+                                productCommand.setQte(quantity);
+                                productCommand.setProduct(product);
+                                productCommand.setCommand(c);
+                                return productCommand;
+                            }).toList();
+                    c.getProductCommands().addAll(productCommands);
+                    double total = 0.0;
+                    total = productCommands.stream()
+                            .mapToDouble(productCommand -> productCommand.getProduct().getPrice() * productCommand.getQte())
+                            .sum();
+                    c.setTotal(c.getTotal()+total);
+
+                }
+
+            }
 
             Command savedCommand = commandRepository.save(commandMapper.toUpdate(updateCommandDto,c));
-
             return commandMapper.toDto(savedCommand);
         }
         return null;
@@ -145,6 +157,17 @@ public class CommandServiceImpl implements CommandService {
         Command command=commandRepository.findById(id).orElse(null);
         if (command!=null) {
             command.setStatus(Status.DELIVERY);
+            commandRepository.save(command);
+            return true;
+        }
+        else return false;
+    }
+
+    @Override
+    public Boolean paymentStatus(String id) {
+        Command command=commandRepository.findById(id).orElse(null);
+        if (command!=null) {
+            command.setPayment(Payment.PAY);
             commandRepository.save(command);
             return true;
         }
