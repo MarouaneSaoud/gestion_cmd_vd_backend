@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -60,12 +61,16 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDTO> getProductsByCategory(String idCategory) {
-        List<Product> products = productRepository.findProductsByCategory(idCategory);
+        Category category = categoryRepository.findById(idCategory).orElse(null);
+        if (category!=null){
+        List<Product> products = productRepository.findProductsByCategory(category);
         return products.stream()
                 .map(product -> {
 
                     return productMapper.toDto(product);
 
                 }).toList();
+        }
+        else return null;
     }
 }
