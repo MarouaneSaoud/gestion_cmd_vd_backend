@@ -1,9 +1,7 @@
 package com.veri_delice.gestion_cmd_vd_backend.service;
-
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.CommandDto;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.ToOrderDto;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.UpdateCommandDto;
-
 import java.util.List;
 public interface CommandService {
     CommandDto command(ToOrderDto toOrderDto);

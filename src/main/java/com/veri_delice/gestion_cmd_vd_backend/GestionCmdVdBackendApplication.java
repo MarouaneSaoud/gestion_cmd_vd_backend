@@ -1,15 +1,18 @@
 package com.veri_delice.gestion_cmd_vd_backend;
 
+import com.veri_delice.gestion_cmd_vd_backend.dao.entities.Category;
 import com.veri_delice.gestion_cmd_vd_backend.dao.entities.Client;
 import com.veri_delice.gestion_cmd_vd_backend.dao.entities.Command;
 import com.veri_delice.gestion_cmd_vd_backend.dao.entities.Product;
 import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.Status;
 import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.UniteProd;
+import com.veri_delice.gestion_cmd_vd_backend.dao.repo.CategoryRepository;
 import com.veri_delice.gestion_cmd_vd_backend.dao.repo.ClientRepository;
 import com.veri_delice.gestion_cmd_vd_backend.dao.repo.CommandRepository;
 import com.veri_delice.gestion_cmd_vd_backend.dao.repo.ProductRepository;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.CommandDto;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.ToOrderDto;
+import com.veri_delice.gestion_cmd_vd_backend.service.ClientService;
 import com.veri_delice.gestion_cmd_vd_backend.service.CommandService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -17,6 +20,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -30,17 +34,35 @@ public class GestionCmdVdBackendApplication {
     CommandLineRunner commandLineRunner(
             ProductRepository productRepository,
             ClientRepository clientRepository,
-            CommandService commandService){
+            CommandService commandService ,
+            ClientService clientService,
+            CategoryRepository categoryRepository){
         return args -> {
-            Product product = Product.builder()
+            Category c = Category.builder()
+                    .id(UUID.randomUUID().toString())
+                    .name("Bestila").build();
+            categoryRepository.save(c);
+            Product p1 = Product.builder()
                     .id(UUID.randomUUID().toString())
                     .name("Bestila Poison")
                     .description("for special occasions")
                     .price(20.0)
                     .uniteProd(UniteProd.UNIT)
+                    .category(c)
                     .build();
 
-            productRepository.save(product);
+            Product p2 = Product.builder()
+                    .id(UUID.randomUUID().toString())
+                    .name("Bestila dajaje")
+                    .description("for special occasions")
+                    .price(20.0)
+                    .uniteProd(UniteProd.UNIT)
+                    .category(c)
+                    .build();
+
+            productRepository.save(p1);
+            productRepository.save(p2);
+
             Client client = Client.builder()
                     .id(UUID.randomUUID().toString())
                     .address("hay chrifa")
@@ -54,11 +76,10 @@ public class GestionCmdVdBackendApplication {
             toOrderDto.setDescription("Description de la commande");
             toOrderDto.setAdvance(10.0);
             toOrderDto.setDateDelivery(new Date());
-            toOrderDto.setItems(Map.of(product.getId(), 2));
+            toOrderDto.setItems(Map.of(p1.getId(), 2,p2.getId(), 1));
             commandService.command(toOrderDto);
 
 
         };
-
     }
 }

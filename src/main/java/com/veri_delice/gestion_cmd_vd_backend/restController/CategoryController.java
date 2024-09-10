@@ -4,7 +4,6 @@ import com.veri_delice.gestion_cmd_vd_backend.dto.category.CategoryDto;
 import com.veri_delice.gestion_cmd_vd_backend.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
