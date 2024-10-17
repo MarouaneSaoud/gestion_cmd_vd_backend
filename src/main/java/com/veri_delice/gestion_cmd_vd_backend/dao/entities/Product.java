@@ -6,16 +6,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Entity
-@Builder
-@Data @NoArgsConstructor @AllArgsConstructor
-public class Product {
-    @Id
-    private String id;
-
+@SuperBuilder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Product extends BaseEntity{
     @Column(unique = true)
     private String name;
 

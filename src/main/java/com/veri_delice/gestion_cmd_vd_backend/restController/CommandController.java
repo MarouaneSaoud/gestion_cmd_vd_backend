@@ -1,40 +1,62 @@
 package com.veri_delice.gestion_cmd_vd_backend.restController;
+import com.veri_delice.gestion_cmd_vd_backend.constant.path.CommandPath;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.CommandDto;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.ToOrderDto;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.UpdateCommandDto;
 import com.veri_delice.gestion_cmd_vd_backend.service.CommandService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
-@RequestMapping("/command")
+@RequestMapping(CommandPath.BASE_URL)
 @AllArgsConstructor
 public class CommandController {
-    private CommandService commandService;
-    @PostMapping("/order")
-    public CommandDto order(@RequestBody ToOrderDto toOrderDto) {
-        return commandService.command(toOrderDto);
-    }
-    @GetMapping("/{commandId}/details")
-    public CommandDto getCommandDetails(@PathVariable String commandId) {return commandService.getCommandById(commandId);}
-    @GetMapping("/AllCommands")
-    public List<CommandDto> getAllCommands() {
-        return commandService.getAllCommand();
-    }
-    @PutMapping("/updateOrder")
-    public CommandDto updateOrder(@RequestBody UpdateCommandDto updateCommandDto){return commandService.updateCommand(updateCommandDto);}
-    @GetMapping("/{id}/cancelCommand")
-    public Boolean cancelCommand(@PathVariable String id){
-        return commandService.cancelCommand(id);
-    }
-    @GetMapping("/{id}/deliveryCommand")
-    public Boolean deliveryCommand(@PathVariable String id){
-        return commandService.deliveryCommand(id);
-    }
-    @GetMapping("/{id}/paymentStatus")
-    public Boolean paymentStatus(@PathVariable String id){
-        return commandService.paymentStatus(id);
+
+    private final CommandService commandService;
+
+    @PostMapping(CommandPath.ADD_COMMAND)
+    public ResponseEntity<CommandDto> addCommand(@RequestBody ToOrderDto toOrderDto) {
+        CommandDto createdCommand = commandService.addCommand(toOrderDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdCommand);
     }
 
+    @GetMapping(CommandPath.ALL_COMMANDS)
+    public ResponseEntity<List<CommandDto>> allCommands() {
+        List<CommandDto> commands = commandService.allCommand();
+        return ResponseEntity.ok(commands);
+    }
+
+    @GetMapping(CommandPath.COMMAND_BY_ID)
+    public ResponseEntity<CommandDto> getCommandById(@PathVariable String id) {
+        CommandDto commandDto = commandService.commandById(id);
+        return ResponseEntity.ok(commandDto);
+    }
+
+    @PutMapping(CommandPath.UPDATE_COMMAND)
+    public ResponseEntity<CommandDto> updateCommand(@RequestBody UpdateCommandDto updateCommandDto) {
+        CommandDto updatedCommand = commandService.updateCommand(updateCommandDto);
+        return ResponseEntity.ok(updatedCommand);
+    }
+
+    @DeleteMapping(CommandPath.CANCEL_COMMAND)
+    public ResponseEntity<Void> cancelCommand(@PathVariable String id) {
+        boolean isCanceled = commandService.cancelCommand(id);
+        return isCanceled ? ResponseEntity.noContent().build() : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @PostMapping(CommandPath.DELIVERY_COMMAND)
+    public ResponseEntity<Void> deliverCommand(@PathVariable String id) {
+        boolean isDelivered = commandService.deliveryCommand(id);
+        return isDelivered ? ResponseEntity.noContent().build() : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @PostMapping(CommandPath.PAYMENT_STATUS)
+    public ResponseEntity<Void> updatePaymentStatus(@PathVariable String id) {
+        boolean isUpdated = commandService.paymentStatus(id);
+        return isUpdated ? ResponseEntity.noContent().build() : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
 }

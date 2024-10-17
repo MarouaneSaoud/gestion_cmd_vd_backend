@@ -8,15 +8,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Entity
-@Data @NoArgsConstructor @AllArgsConstructor
-@Builder
-public class Client {
-    @Id
-    private String id;
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+public class Client extends BaseEntity {
+
     private String name;
     private String lastName;
     private String numberPhone;

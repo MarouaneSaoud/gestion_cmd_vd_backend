@@ -21,5 +21,7 @@ public class CommandDto {
     private Payment payment;
     private Double advance;
     private Double total;
+    private Date createdAt;
+    private Date updatedAt;
     private List<ProductCommandDto> productCommandDtos;
 }

@@ -1,26 +1,31 @@
 package com.veri_delice.gestion_cmd_vd_backend.restController;
 
+import com.veri_delice.gestion_cmd_vd_backend.constant.path.CategoryPath;
 import com.veri_delice.gestion_cmd_vd_backend.dto.category.CategoryDto;
 import com.veri_delice.gestion_cmd_vd_backend.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
-@RequestMapping("/category")
+@RequestMapping(CategoryPath.baseUrl)
 @AllArgsConstructor
 public class CategoryController {
     private final CategoryService categoryService;
-    @PostMapping("/addCategory")
-    public CategoryDto saveCategory (@RequestBody CategoryDto categoryDto){
+
+    @PostMapping(CategoryPath.addCategory)
+    public CategoryDto saveCategory(@RequestBody CategoryDto categoryDto) {
         return categoryService.saveCategory(categoryDto);
     }
-    @GetMapping("/allCategories")
-    public List<CategoryDto> getAllCategory(){
-        return categoryService.getAllCategory();
+
+    @GetMapping(CategoryPath.allCategory)
+    public List<CategoryDto> allCategory() {
+        return categoryService.AllCategory();
     }
-    @GetMapping("/Category/{id}")
-    public CategoryDto getById(@PathVariable String id){
-        return categoryService.getById(id);
+
+    @GetMapping(CategoryPath.categoryById)
+    public CategoryDto getById(@PathVariable String id) {
+        return categoryService.categoryById(id);
     }
 }

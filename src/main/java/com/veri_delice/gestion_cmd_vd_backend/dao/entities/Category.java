@@ -7,18 +7,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class Category {
-    @Id
-    private String id;
+@SuperBuilder
+@Entity
+public class Category extends BaseEntity {
+
     private String name;
+
     @OneToMany(mappedBy = "category")
     private List<Product> products;
 }

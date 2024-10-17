@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ClientService {
     ClientDto addClient(ClientToSave clientToSave);
-    List<ClientDto> getAllClient();
-    ClientDto getClientById(String id);
-    List<CommandDto> getCommandByClient(String idClient);
+    List<ClientDto> allClient();
+    ClientDto clientById(String id);
+    List<CommandDto> commandByClient(String idClient);
 }

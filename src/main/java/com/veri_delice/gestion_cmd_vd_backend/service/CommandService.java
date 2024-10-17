@@ -4,9 +4,9 @@ import com.veri_delice.gestion_cmd_vd_backend.dto.command.ToOrderDto;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.UpdateCommandDto;
 import java.util.List;
 public interface CommandService {
-    CommandDto command(ToOrderDto toOrderDto);
-    CommandDto getCommandById(String commandId);
-    List<CommandDto> getAllCommand();
+    CommandDto addCommand(ToOrderDto toOrderDto);
+    CommandDto commandById(String commandId);
+    List<CommandDto> allCommand();
     CommandDto updateCommand(UpdateCommandDto updateCommandDto);
     Boolean cancelCommand(String id);
     Boolean deliveryCommand(String id);

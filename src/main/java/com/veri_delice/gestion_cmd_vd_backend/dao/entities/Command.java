@@ -8,17 +8,18 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
 import java.util.List;
 
 @Entity
-@Builder
-@Data @NoArgsConstructor @AllArgsConstructor
-public class Command {
-    @Id
-    private String id;
+@SuperBuilder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Command extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "client_id")
@@ -26,9 +27,6 @@ public class Command {
 
     @Column(length = 500)
     private String description;
-
-    @CreationTimestamp
-    private Date dateCommand;
 
     private Date dateDelivery;
 
