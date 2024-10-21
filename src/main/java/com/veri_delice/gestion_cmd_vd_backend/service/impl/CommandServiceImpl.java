@@ -5,7 +5,7 @@ import com.veri_delice.gestion_cmd_vd_backend.dao.entities.Command;
 import com.veri_delice.gestion_cmd_vd_backend.dao.entities.Product;
 import com.veri_delice.gestion_cmd_vd_backend.dao.entities.ProductCommand;
 import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.Payment;
-import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.Status;
+import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.PayementStatus;
 import com.veri_delice.gestion_cmd_vd_backend.dao.repo.ClientRepository;
 import com.veri_delice.gestion_cmd_vd_backend.dao.repo.CommandRepository;
 import com.veri_delice.gestion_cmd_vd_backend.dao.repo.ProductRepository;
@@ -48,7 +48,7 @@ public class CommandServiceImpl implements CommandService {
             Command command = Command.builder()
                     .id(UUID.randomUUID().toString())
                     .description(toOrderDto.getDescription())
-                    .status(Status.IN_PROGRESS)
+                    .status(PayementStatus.IN_PROGRESS)
                     .advance(toOrderDto.getAdvance())
                     .client(client)
                     .dateDelivery(toOrderDto.getDateDelivery())
@@ -134,7 +134,7 @@ public class CommandServiceImpl implements CommandService {
     public Boolean cancelCommand(String id) {
         Command command = commandRepository.findById(id).orElse(null);
         if (command != null) {
-            command.setStatus(Status.CANCEL);
+            command.setStatus(PayementStatus.CANCEL);
             commandRepository.save(command);
             return true;
         } else throw new TechnicalException("Une erreur s'est produit ");
@@ -143,7 +143,7 @@ public class CommandServiceImpl implements CommandService {
     public Boolean deliveryCommand(String id) {
         Command command = commandRepository.findById(id).orElse(null);
         if (command != null) {
-            command.setStatus(Status.DELIVERY);
+            command.setStatus(PayementStatus.DELIVERY);
             commandRepository.save(command);
             return true;
         } else throw new TechnicalException("Une erreur s'est produit");

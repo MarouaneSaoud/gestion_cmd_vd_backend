@@ -1,6 +1,6 @@
 package com.veri_delice.gestion_cmd_vd_backend.dto.command;
 import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.Payment;
-import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.Status;
+import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.PayementStatus;
 import com.veri_delice.gestion_cmd_vd_backend.dto.client.ClientDto;
 import com.veri_delice.gestion_cmd_vd_backend.dto.productCommand.ProductCommandDto;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ public class CommandDto {
     private String description;
     private Date dateCommand;
     private Date dateDelivery;
-    private Status status;
+    private PayementStatus status;
     private Payment payment;
     private Double advance;
     private Double total;
