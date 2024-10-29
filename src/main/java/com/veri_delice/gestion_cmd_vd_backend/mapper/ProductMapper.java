@@ -4,7 +4,7 @@ import com.veri_delice.gestion_cmd_vd_backend.config.ModelMapperConfig;
 import com.veri_delice.gestion_cmd_vd_backend.dao.entities.Product;
 import com.veri_delice.gestion_cmd_vd_backend.dto.category.CategoryDto;
 import com.veri_delice.gestion_cmd_vd_backend.dto.product.ProductDTO;
-import com.veri_delice.gestion_cmd_vd_backend.dto.product.ToCreateProductDto;
+import com.veri_delice.gestion_cmd_vd_backend.dto.product.CreateProductRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 @Component
@@ -22,7 +22,7 @@ public class ProductMapper {
     public Product toEntity(ProductDTO productDTO){
         return modelMapperConfig.modelMapper().map(productDTO,Product.class);
     }
-    public Product toSaveDto(ToCreateProductDto toCreateProductDto) {
+    public Product toSaveDto(CreateProductRequest toCreateProductDto) {
         Product map = modelMapperConfig.modelMapper().map(toCreateProductDto, Product.class);
         return map;
     }

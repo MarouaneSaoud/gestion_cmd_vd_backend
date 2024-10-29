@@ -50,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
     }
     @Override
     public void register(RegisterDto registerDto) {
-        if (userRepository.findByEmail(registerDto.getUsername()).isPresent()) {
+        if (userRepository.findByEmail(registerDto.getEmail()).isPresent()) {
             throw new RuntimeException("User already exists!");
         }
         User user = new User();

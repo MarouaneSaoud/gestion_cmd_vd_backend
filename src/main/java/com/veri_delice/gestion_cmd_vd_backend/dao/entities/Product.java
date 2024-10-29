@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product extends BaseEntity{
+
     @Column(unique = true)
     private String name;
 
@@ -33,4 +34,8 @@ public class Product extends BaseEntity{
 
     @ManyToOne
     private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

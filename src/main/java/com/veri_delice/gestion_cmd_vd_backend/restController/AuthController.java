@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(AuthPath.BASE_URL)
 public class AuthController {
 
-    @Autowired
     private AuthService authService;
 
     @PostMapping(AuthPath.LOGIN)

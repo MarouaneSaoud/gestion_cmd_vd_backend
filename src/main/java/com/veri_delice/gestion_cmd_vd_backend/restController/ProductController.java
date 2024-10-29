@@ -2,7 +2,7 @@ package com.veri_delice.gestion_cmd_vd_backend.restController;
 
 import com.veri_delice.gestion_cmd_vd_backend.constant.path.ProductPath;
 import com.veri_delice.gestion_cmd_vd_backend.dto.product.ProductDTO;
-import com.veri_delice.gestion_cmd_vd_backend.dto.product.ToCreateProductDto;
+import com.veri_delice.gestion_cmd_vd_backend.dto.product.CreateProductRequest;
 import com.veri_delice.gestion_cmd_vd_backend.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +18,7 @@ public class ProductController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(ProductPath.addProduct)
-    public ProductDTO createProduct(@RequestBody ToCreateProductDto toCreateDto) {
+    public ProductDTO createProduct(@RequestBody CreateProductRequest toCreateDto) {
         return productService.createProduct(toCreateDto);
     }
 

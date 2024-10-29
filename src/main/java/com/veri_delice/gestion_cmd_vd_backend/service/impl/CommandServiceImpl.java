@@ -10,7 +10,7 @@ import com.veri_delice.gestion_cmd_vd_backend.dao.repo.ClientRepository;
 import com.veri_delice.gestion_cmd_vd_backend.dao.repo.CommandRepository;
 import com.veri_delice.gestion_cmd_vd_backend.dao.repo.ProductRepository;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.CommandDto;
-import com.veri_delice.gestion_cmd_vd_backend.dto.command.ToOrderDto;
+import com.veri_delice.gestion_cmd_vd_backend.dto.command.AddCommandRequest;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.UpdateCommandDto;
 import com.veri_delice.gestion_cmd_vd_backend.exception.error.BusinessException;
 import com.veri_delice.gestion_cmd_vd_backend.exception.error.TechnicalException;
@@ -37,9 +37,9 @@ public class CommandServiceImpl implements CommandService {
     private final ClientRepository clientRepository;
 
     @Override
-    public CommandDto addCommand(ToOrderDto toOrderDto) {
-        Client client = clientRepository.findById(toOrderDto.getIdClient()).orElseThrow(() -> new BusinessException("Le client avec l'ID spécifié n'existe pas."));
-        Set<String> productIds = toOrderDto.getItems().keySet();
+    public CommandDto addCommand(AddCommandRequest addCommandRequest) {
+        Client client = clientRepository.findById(addCommandRequest.getIdClient()).orElseThrow(() -> new BusinessException("Le client avec l'ID spécifié n'existe pas."));
+        Set<String> productIds = addCommandRequest.getItems().keySet();
         List<Product> products = productRepository.findAllById(productIds);
         if (products.size() != productIds.size()) {
             throw new BusinessException("Certains produits spécifiés n'existent pas.");
@@ -47,16 +47,16 @@ public class CommandServiceImpl implements CommandService {
         try {
             Command command = Command.builder()
                     .id(UUID.randomUUID().toString())
-                    .description(toOrderDto.getDescription())
+                    .description(addCommandRequest.getDescription())
                     .status(PayementStatus.IN_PROGRESS)
-                    .advance(toOrderDto.getAdvance())
+                    .advance(addCommandRequest.getAdvance())
                     .client(client)
-                    .dateDelivery(toOrderDto.getDateDelivery())
+                    .dateDelivery(addCommandRequest.getDateDelivery())
                     .build();
             double total = 0.0;
             List<ProductCommand> productCommands = products.stream()
                     .map(product -> {
-                        int quantity = toOrderDto.getItems().get(product.getId());
+                        int quantity = addCommandRequest.getItems().get(product.getId());
                         ProductCommand productCommand = new ProductCommand();
                         productCommand.setQte(quantity);
                         productCommand.setProduct(product);

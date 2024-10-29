@@ -2,6 +2,7 @@ package com.veri_delice.gestion_cmd_vd_backend.restController;
 
 import com.veri_delice.gestion_cmd_vd_backend.constant.path.CategoryPath;
 import com.veri_delice.gestion_cmd_vd_backend.dto.category.CategoryDto;
+import com.veri_delice.gestion_cmd_vd_backend.dto.category.SaveCategoryRequest;
 import com.veri_delice.gestion_cmd_vd_backend.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,7 +17,7 @@ public class CategoryController {
     private final CategoryService categoryService;
     @PreAuthorize( "hasRole('ADMIN')" )
     @PostMapping(CategoryPath.addCategory)
-    public CategoryDto saveCategory(@RequestBody CategoryDto categoryDto) {
+    public CategoryDto saveCategory(@RequestBody SaveCategoryRequest categoryDto) {
         return categoryService.saveCategory(categoryDto);
     }
     @PreAuthorize( "hasRole('ADMIN')" )

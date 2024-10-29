@@ -4,12 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @AllArgsConstructor
+@Data
 @NoArgsConstructor
-public class RegisterDto {
-    private String name;
-    private String email;
-    private String password;
-    private String roleName;
+public class UserStatistics {
+    private int nbClient;
+    private int nbProduct;
+    private int nbCommand;
 }

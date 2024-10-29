@@ -1,7 +1,7 @@
 package com.veri_delice.gestion_cmd_vd_backend.restController;
 import com.veri_delice.gestion_cmd_vd_backend.constant.path.CommandPath;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.CommandDto;
-import com.veri_delice.gestion_cmd_vd_backend.dto.command.ToOrderDto;
+import com.veri_delice.gestion_cmd_vd_backend.dto.command.AddCommandRequest;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.UpdateCommandDto;
 import com.veri_delice.gestion_cmd_vd_backend.service.CommandService;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ public class CommandController {
     private final CommandService commandService;
     @PreAuthorize( "hasRole('ADMIN')" )
     @PostMapping(CommandPath.ADD_COMMAND)
-    public ResponseEntity<CommandDto> addCommand(@RequestBody ToOrderDto toOrderDto) {
+    public ResponseEntity<CommandDto> addCommand(@RequestBody AddCommandRequest toOrderDto) {
         CommandDto createdCommand = commandService.addCommand(toOrderDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCommand);
     }

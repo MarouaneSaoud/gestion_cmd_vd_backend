@@ -7,7 +7,7 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ToOrderDto {
+public class AddCommandRequest {
     private String idClient;
     private String description;
     private Double advance;

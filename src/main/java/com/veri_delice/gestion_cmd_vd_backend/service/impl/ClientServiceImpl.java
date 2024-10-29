@@ -2,9 +2,11 @@ package com.veri_delice.gestion_cmd_vd_backend.service.impl;
 
 import com.veri_delice.gestion_cmd_vd_backend.constant.ResponseMessage.ClientResponseMessage;
 import com.veri_delice.gestion_cmd_vd_backend.dao.entities.Client;
+import com.veri_delice.gestion_cmd_vd_backend.dao.entities.User;
 import com.veri_delice.gestion_cmd_vd_backend.dao.repo.ClientRepository;
+import com.veri_delice.gestion_cmd_vd_backend.dao.repo.UserRepository;
 import com.veri_delice.gestion_cmd_vd_backend.dto.client.ClientDto;
-import com.veri_delice.gestion_cmd_vd_backend.dto.client.ClientToSave;
+import com.veri_delice.gestion_cmd_vd_backend.dto.client.SaveClientRequest;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.CommandDto;
 import com.veri_delice.gestion_cmd_vd_backend.exception.error.BusinessException;
 import com.veri_delice.gestion_cmd_vd_backend.exception.error.TechnicalException;
@@ -25,12 +27,17 @@ public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
     private final CommandMapper commandMapper;
+    private final UserRepository userRepository;
+
 
     @Override
-    public ClientDto addClient(ClientToSave clientToSave) {
+    public ClientDto addClient(SaveClientRequest clientToSave) {
         try {
+            User user = userRepository.findByEmail(clientToSave.getEmail()).orElseThrow(() -> new BusinessException("Utilisateur non trouver"));
             Client c = clientMapper.toSaveDto(clientToSave);
             c.setId(UUID.randomUUID().toString());
+            c.setCommands(null);
+            c.setUser(user);
             return clientMapper.toDto(clientRepository.save(c));
         } catch (Exception e) {
             throw new TechnicalException(ClientResponseMessage.CLIENT_CREATION_ERROR);

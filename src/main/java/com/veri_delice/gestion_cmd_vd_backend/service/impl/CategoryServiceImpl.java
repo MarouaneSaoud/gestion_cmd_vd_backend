@@ -4,6 +4,7 @@ import com.veri_delice.gestion_cmd_vd_backend.constant.ResponseMessage.CategoryR
 import com.veri_delice.gestion_cmd_vd_backend.dao.entities.Category;
 import com.veri_delice.gestion_cmd_vd_backend.dao.repo.CategoryRepository;
 import com.veri_delice.gestion_cmd_vd_backend.dto.category.CategoryDto;
+import com.veri_delice.gestion_cmd_vd_backend.dto.category.SaveCategoryRequest;
 import com.veri_delice.gestion_cmd_vd_backend.exception.error.BusinessException;
 import com.veri_delice.gestion_cmd_vd_backend.exception.error.TechnicalException;
 import com.veri_delice.gestion_cmd_vd_backend.mapper.CategoryMapper;
@@ -27,9 +28,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDto saveCategory(CategoryDto categoryDto) {
+    public CategoryDto saveCategory(SaveCategoryRequest categoryDto) {
         try {
-            if (!this.checkIfCategoryExist(categoryDto.getName())) {
+            if (this.checkIfCategoryExist(categoryDto.getName())) {
                 throw new BusinessException(CategoryResponseMessage.CATEGORY_ALREADY_EXISTS);
             }
             Category category = Category.builder()
