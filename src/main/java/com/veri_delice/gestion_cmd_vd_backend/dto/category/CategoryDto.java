@@ -9,15 +9,17 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.util.Date;
 import java.util.List;
 
+import lombok.Data;
+import java.util.List;
+
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class CategoryDto {
+
     private String id;
-
-    private Date createdAt;
-
-    private Date updatedAt;
-
     private String name;
+    private String categoryOwner;
+    private String parentCategoryId;
+    private String parentCategoryName;
+    private List<CategoryDto> subCategories;
+
 }

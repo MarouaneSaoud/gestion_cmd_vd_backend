@@ -1,6 +1,7 @@
 package com.veri_delice.gestion_cmd_vd_backend.restController;
 import com.veri_delice.gestion_cmd_vd_backend.constant.path.UserPath;
 import com.veri_delice.gestion_cmd_vd_backend.dto.auth.UserStatistics;
+import com.veri_delice.gestion_cmd_vd_backend.dto.category.CategoryDto;
 import com.veri_delice.gestion_cmd_vd_backend.dto.client.ClientDto;
 import com.veri_delice.gestion_cmd_vd_backend.dto.product.ProductDTO;
 import com.veri_delice.gestion_cmd_vd_backend.service.UserService;
@@ -28,8 +29,14 @@ public class UserController {
         return new ResponseEntity<>(userService.userClient(email), HttpStatus.OK);
     }
     @PreAuthorize( "hasRole('ADMIN')" )
+    @GetMapping(UserPath.USER_CATEGORIES)
+    public ResponseEntity<Set<CategoryDto>> userCategory(@PathVariable String email) {
+        return new ResponseEntity<>(userService.userCategory(email), HttpStatus.OK);
+    }
+    @PreAuthorize( "hasRole('ADMIN')" )
     @GetMapping(UserPath.USER_STATISTICS)
     public ResponseEntity<UserStatistics> userStatistics(@PathVariable String email) {
         return new ResponseEntity<>(userService.userStatistics(email), HttpStatus.OK);
     }
+
 }

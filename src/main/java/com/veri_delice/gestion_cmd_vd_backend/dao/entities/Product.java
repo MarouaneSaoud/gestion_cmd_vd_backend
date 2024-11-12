@@ -1,5 +1,6 @@
 package com.veri_delice.gestion_cmd_vd_backend.dao.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.UniteProd;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,17 +26,31 @@ public class Product extends BaseEntity{
 
     private Double price;
 
+    private Double Tva;
+
+    private Double discount;
+
+    private Double Stock;
+
+    private Long barcode;
+
+    @ElementCollection
+    @CollectionTable(name = "product_sizes", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "size")
+    private List<String> size;
+
     private String pictures;
 
     @OneToMany(mappedBy = "product")
     private List<ProductCommand> productCommands;
 
+    @Enumerated(EnumType.STRING)
     private UniteProd uniteProd;
 
     @ManyToOne
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     private User user;
 }

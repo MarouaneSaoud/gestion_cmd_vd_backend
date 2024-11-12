@@ -1,5 +1,6 @@
 package com.veri_delice.gestion_cmd_vd_backend.dao.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.UserStatus;
 import jakarta.persistence.*;
 import java.util.Set;
@@ -42,4 +43,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<Product> products;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private Set<Category> categories;
+
+
 }

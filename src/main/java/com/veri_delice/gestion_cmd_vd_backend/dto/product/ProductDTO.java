@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -15,6 +16,11 @@ public class ProductDTO {
     private String name;
     private String description;
     private Double price;
+    private Double Tva;
+    private Double stock;
+    private Long barcode;
+    private List<String> size;
+    private Double discount;
     private String pictures;
     private UniteProd uniteProd;
     private Date createdAt;

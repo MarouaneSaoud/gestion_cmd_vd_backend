@@ -9,4 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class SaveCategoryRequest {
     private String name;
+    private String parentCategory;
+    private String email;
+
 }

@@ -2,7 +2,7 @@ package com.veri_delice.gestion_cmd_vd_backend.dao.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.Payment;
-import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.PayementStatus;
+import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.CommandStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,7 +29,8 @@ public class Command extends BaseEntity{
     private Date dateDelivery;
 
     @Enumerated(EnumType.STRING)
-    private PayementStatus status;
+    private CommandStatus commandStatus;
+
 
     @Enumerated(EnumType.STRING)
     private Payment payment;

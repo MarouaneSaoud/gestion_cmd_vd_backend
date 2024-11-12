@@ -11,31 +11,31 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(ProductPath.baseUrl)
+@RequestMapping(ProductPath.BASE_URL)
 @AllArgsConstructor
 public class ProductController {
     private ProductService productService;
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(ProductPath.addProduct)
+    @PostMapping(ProductPath.ADD_PRODUCT)
     public ProductDTO createProduct(@RequestBody CreateProductRequest toCreateDto) {
         return productService.createProduct(toCreateDto);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping(ProductPath.productById)
+    @GetMapping(ProductPath.PRODUCTS_BY_ID)
     public ProductDTO productById(@PathVariable String id) {
         return productService.getProductById(id);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping(ProductPath.products)
+    @GetMapping(ProductPath.PRODUCTS)
     public List<ProductDTO> allProducts() {
         return productService.getAllProduct();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping(ProductPath.productByCategory)
+    @GetMapping(ProductPath.PRODUCT_BY_CATEGORY)
     public List<ProductDTO> productsByCategory(@PathVariable String idCategory) {
         return productService.getProductsByCategory(idCategory);
     }

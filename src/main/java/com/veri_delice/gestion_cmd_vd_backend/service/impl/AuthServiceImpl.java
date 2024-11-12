@@ -1,6 +1,7 @@
 package com.veri_delice.gestion_cmd_vd_backend.service.impl;
 
 import com.veri_delice.gestion_cmd_vd_backend.config.auth.JwtTokenProvider;
+import com.veri_delice.gestion_cmd_vd_backend.constant.ResponseMessage.UserResponseMessage;
 import com.veri_delice.gestion_cmd_vd_backend.dao.entities.Role;
 import com.veri_delice.gestion_cmd_vd_backend.dao.entities.User;
 import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.UserStatus;
@@ -8,6 +9,8 @@ import com.veri_delice.gestion_cmd_vd_backend.dao.repo.RoleRepository;
 import com.veri_delice.gestion_cmd_vd_backend.dao.repo.UserRepository;
 import com.veri_delice.gestion_cmd_vd_backend.dto.auth.LoginDto;
 import com.veri_delice.gestion_cmd_vd_backend.dto.auth.RegisterDto;
+import com.veri_delice.gestion_cmd_vd_backend.dto.auth.UpdatePasswordDto;
+import com.veri_delice.gestion_cmd_vd_backend.exception.error.BusinessException;
 import com.veri_delice.gestion_cmd_vd_backend.service.AuthService;
 
 import lombok.AllArgsConstructor;
@@ -34,9 +37,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String login(LoginDto loginDto) {
         if (userRepository.findByEmail(loginDto.getUsername()).get().getUserStatus().equals(UserStatus.BANNED)) {
-            throw new RuntimeException("Vous etes banner!");
+            throw new BusinessException(UserResponseMessage.USER_BANNED);
         }
-        // 01 - AuthenticationManager is used to authenticate the user
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginDto.getUsername(),
                 loginDto.getPassword()
@@ -51,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void register(RegisterDto registerDto) {
         if (userRepository.findByEmail(registerDto.getEmail()).isPresent()) {
-            throw new RuntimeException("User already exists!");
+            throw new BusinessException(UserResponseMessage.USER_EXIST);
         }
         User user = new User();
         user.setName(registerDto.getName());
@@ -59,7 +61,6 @@ public class AuthServiceImpl implements AuthService {
         user.setUserStatus(UserStatus.PENDING);
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
 
-        // Check if role exists, create if it doesn't
         Role role = roleRepository.findRoleByName(registerDto.getRoleName())
                 .orElseGet(() -> {
                     Role newRole = new Role();
@@ -67,13 +68,20 @@ public class AuthServiceImpl implements AuthService {
                     return roleRepository.save(newRole);
                 });
 
-        // Set user roles
         user.setRoles(Collections.singleton(role));
 
-        // Save user in database
         userRepository.save(user);
 
     }
-
+    @Override
+    public void updatePassword(UpdatePasswordDto updatePasswordDto) {
+        User user = userRepository.findByEmail(updatePasswordDto.getEmail())
+                .orElseThrow(() -> new BusinessException(UserResponseMessage.USER_NOT_FOUND));
+        if (!passwordEncoder.matches(updatePasswordDto.getCurrentPassword(), user.getPassword())) {
+            throw new BusinessException(UserResponseMessage.CURRENT_PASSWORD_INCORRECT);
+        }
+        user.setPassword(passwordEncoder.encode(updatePasswordDto.getNewPassword()));
+        userRepository.save(user);
+    }
 
 }

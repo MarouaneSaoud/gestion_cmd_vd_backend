@@ -1,8 +1,6 @@
 package com.veri_delice.gestion_cmd_vd_backend.restController;
 import com.veri_delice.gestion_cmd_vd_backend.constant.path.CommandPath;
-import com.veri_delice.gestion_cmd_vd_backend.dto.command.CommandDto;
-import com.veri_delice.gestion_cmd_vd_backend.dto.command.AddCommandRequest;
-import com.veri_delice.gestion_cmd_vd_backend.dto.command.UpdateCommandDto;
+import com.veri_delice.gestion_cmd_vd_backend.dto.command.*;
 import com.veri_delice.gestion_cmd_vd_backend.service.CommandService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -42,22 +40,17 @@ public class CommandController {
         CommandDto updatedCommand = commandService.updateCommand(updateCommandDto);
         return ResponseEntity.ok(updatedCommand);
     }
-    @PreAuthorize( "hasRole('ADMIN')" )
-    @DeleteMapping(CommandPath.CANCEL_COMMAND)
-    public ResponseEntity<Void> cancelCommand(@PathVariable String id) {
-        boolean isCanceled = commandService.cancelCommand(id);
-        return isCanceled ? ResponseEntity.noContent().build() : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    }
-    @PreAuthorize( "hasRole('ADMIN')" )
-    @PostMapping(CommandPath.DELIVERY_COMMAND)
-    public ResponseEntity<Void> deliverCommand(@PathVariable String id) {
-        boolean isDelivered = commandService.deliveryCommand(id);
-        return isDelivered ? ResponseEntity.noContent().build() : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    }
+
     @PreAuthorize( "hasRole('ADMIN')" )
     @PostMapping(CommandPath.PAYMENT_STATUS)
-    public ResponseEntity<Void> updatePaymentStatus(@PathVariable String id) {
-        boolean isUpdated = commandService.paymentStatus(id);
+    public ResponseEntity<Void> updatePaymentStatus(@RequestBody ChangePayementStatusRequest changePayementStatusRequest) {
+        boolean isUpdated = commandService.ChangePayementStatus(changePayementStatusRequest);
+        return isUpdated ? ResponseEntity.noContent().build() : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+    @PreAuthorize( "hasRole('ADMIN')" )
+    @PostMapping(CommandPath.COMMAND_STATUS)
+    public ResponseEntity<Void> updatePaymentStatus(@RequestBody ChangeCommandStatusRequest changeCommandStatusRequest) {
+        boolean isUpdated = commandService.ChangeCommandetStatus(changeCommandStatusRequest);
         return isUpdated ? ResponseEntity.noContent().build() : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 }

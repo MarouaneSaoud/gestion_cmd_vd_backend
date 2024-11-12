@@ -4,6 +4,7 @@ import com.veri_delice.gestion_cmd_vd_backend.constant.path.AuthPath;
 import com.veri_delice.gestion_cmd_vd_backend.dto.auth.AuthResponseDto;
 import com.veri_delice.gestion_cmd_vd_backend.dto.auth.LoginDto;
 import com.veri_delice.gestion_cmd_vd_backend.dto.auth.RegisterDto;
+import com.veri_delice.gestion_cmd_vd_backend.dto.auth.UpdatePasswordDto;
 import com.veri_delice.gestion_cmd_vd_backend.service.AuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +33,9 @@ public class AuthController {
     @PostMapping(AuthPath.REGISTER)
     public void register(@RequestBody RegisterDto registerDto) {
         authService.register(registerDto);
+    }
+    @PostMapping(AuthPath.UPDATE_PASSWORD)
+    public void updatePassword(@RequestBody UpdatePasswordDto updatePasswordDto) {
+        authService.updatePassword(updatePasswordDto);
     }
 }

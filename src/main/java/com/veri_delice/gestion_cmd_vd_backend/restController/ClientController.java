@@ -12,27 +12,27 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(ClientPath.baseUrl)
+@RequestMapping(ClientPath.BASE_URL)
 @AllArgsConstructor
 public class ClientController {
     private final ClientService clientService;
     @PreAuthorize( "hasRole('ADMIN')" )
-    @PostMapping(ClientPath.addClient)
+    @PostMapping(ClientPath.ADD_CLIENT)
     public ClientDto addClient(@RequestBody SaveClientRequest clientToSave) {
         return clientService.addClient(clientToSave);
     }
     @PreAuthorize( "hasRole('ADMIN')" )
-    @GetMapping(ClientPath.allClient)
+    @GetMapping(ClientPath.ALL_CLIENT)
     public List<ClientDto> allClient() {
         return clientService.allClient();
     }
     @PreAuthorize( "hasRole('ADMIN')" )
-    @GetMapping(ClientPath.clientById)
+    @GetMapping(ClientPath.CLIENT_BY_ID)
     public ClientDto clientById(@PathVariable String id) {
         return clientService.clientById(id);
     }
     @PreAuthorize( "hasRole('ADMIN')" )
-    @GetMapping(ClientPath.commandByClient)
+    @GetMapping(ClientPath.COMMAND_BY_CLIENT)
     public List<CommandDto> commandByClient(String clientId) {
         return clientService.commandByClient(clientId);
     }
