@@ -38,4 +38,6 @@ public class ProductCommand {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    private String size ;
+
 }

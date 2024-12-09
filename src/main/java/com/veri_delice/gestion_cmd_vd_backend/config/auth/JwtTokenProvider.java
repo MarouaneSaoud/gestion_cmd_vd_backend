@@ -68,5 +68,42 @@ public class JwtTokenProvider {
         return true;
 
     }
+    public String generateRefreshToken(Authentication authentication) {
+        String username = authentication.getName();
+
+        Date currentDate = new Date();
+        Date expireDate = new Date(currentDate.getTime() + 604800000); // 7 jours
+
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(currentDate)
+                .setExpiration(expireDate)
+                .signWith(key(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+    public boolean validateRefreshToken(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith((SecretKey) key())
+                    .build()
+                    .parse(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    public String getUsernameFromRefreshToken(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith((SecretKey) key())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getSubject();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid refresh token", e);
+        }
+    }
+
 
 }

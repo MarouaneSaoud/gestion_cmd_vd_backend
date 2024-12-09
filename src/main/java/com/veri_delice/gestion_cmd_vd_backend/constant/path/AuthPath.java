@@ -5,4 +5,5 @@ public class AuthPath {
     public static final String LOGIN = "/login";
     public static final String REGISTER = "/register";
     public static final String UPDATE_PASSWORD = "/updatePassword";
+    public static final String REFRESH_TOKEN = "/refresh-token/{refreshToken}";
 }

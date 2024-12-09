@@ -3,15 +3,10 @@ package com.veri_delice.gestion_cmd_vd_backend.service.impl;
 import com.veri_delice.gestion_cmd_vd_backend.constant.ResponseMessage.ClientResponseMessage;
 import com.veri_delice.gestion_cmd_vd_backend.constant.ResponseMessage.CommandResponseMessage;
 import com.veri_delice.gestion_cmd_vd_backend.constant.ResponseMessage.ProductResponseMessage;
-import com.veri_delice.gestion_cmd_vd_backend.dao.entities.Client;
-import com.veri_delice.gestion_cmd_vd_backend.dao.entities.Command;
-import com.veri_delice.gestion_cmd_vd_backend.dao.entities.Product;
-import com.veri_delice.gestion_cmd_vd_backend.dao.entities.ProductCommand;
+import com.veri_delice.gestion_cmd_vd_backend.dao.entities.*;
 import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.Payment;
 import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.CommandStatus;
-import com.veri_delice.gestion_cmd_vd_backend.dao.repo.ClientRepository;
-import com.veri_delice.gestion_cmd_vd_backend.dao.repo.CommandRepository;
-import com.veri_delice.gestion_cmd_vd_backend.dao.repo.ProductRepository;
+import com.veri_delice.gestion_cmd_vd_backend.dao.repo.*;
 import com.veri_delice.gestion_cmd_vd_backend.dto.command.*;
 import com.veri_delice.gestion_cmd_vd_backend.exception.error.BusinessException;
 import com.veri_delice.gestion_cmd_vd_backend.exception.error.TechnicalException;
@@ -22,10 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Transactional
@@ -36,8 +28,11 @@ public class CommandServiceImpl implements CommandService {
     private final ProductRepository productRepository;
     private final CommandMapper commandMapper;
     private final ClientRepository clientRepository;
+    private final ProductSizeStockRepository productSizeStockRepository;
+    private final ProductCommandRepository productCommandRepository;
 
     @Override
+    @Transactional
     public CommandDto addCommand(AddCommandRequest addCommandRequest) {
         Client client = clientRepository.findById(addCommandRequest.getIdClient())
                 .orElseThrow(() -> new BusinessException(ClientResponseMessage.CLIENT_NOT_FOUND));
@@ -49,11 +44,26 @@ public class CommandServiceImpl implements CommandService {
             throw new BusinessException(ProductResponseMessage.SOME_PRODUCTS_NOT_EXISTS);
         }
 
-        // Vérification des stocks avant de continuer
         for (Product product : products) {
-            int requestedQuantity = addCommandRequest.getItems().get(product.getId());
-            if (product.getStock() < requestedQuantity) {
-                throw new BusinessException(ProductResponseMessage.INSUFFICIENT_STOCK_FOR_PRODUCT + product.getName());
+            Map<String, Integer> sizesAndQuantities = addCommandRequest.getItems().get(product.getId());
+
+            for (Map.Entry<String, Integer> sizeAndQuantity : sizesAndQuantities.entrySet()) {
+                String size = sizeAndQuantity.getKey();
+                int requestedQuantity = sizeAndQuantity.getValue();
+
+                ProductSizeStock sizeStock = product.getProductSizeStocks().stream()
+                        .filter(stock -> stock.getSize().equals(size))
+                        .findFirst()
+                        .orElseThrow(() -> new BusinessException(ProductResponseMessage.SIZE_NOT_FOUND
+                                + " for product: " + product.getName()));
+
+                if (sizeStock.getStock() < requestedQuantity) {
+                    throw new BusinessException(ProductResponseMessage.INSUFFICIENT_STOCK_FOR_PRODUCT
+                            + product.getName() + " (" + size + ")");
+                }
+
+                sizeStock.setStock(sizeStock.getStock() - requestedQuantity);
+                productSizeStockRepository.save(sizeStock);
             }
         }
 
@@ -66,35 +76,41 @@ public class CommandServiceImpl implements CommandService {
                     .client(client)
                     .dateDelivery(addCommandRequest.getDateDelivery())
                     .build();
+
             double total = 0.0;
             List<ProductCommand> productCommands = products.stream()
-                    .map(product -> {
-                        int quantity = addCommandRequest.getItems().get(product.getId());
-                        ProductCommand productCommand = new ProductCommand();
-                        productCommand.setQte(quantity);
-                        productCommand.setProduct(product);
-                        productCommand.setCommand(command);
+                    .flatMap(product -> addCommandRequest.getItems().get(product.getId()).entrySet().stream()
+                            .map(sizeAndQuantity -> {
+                                String size = sizeAndQuantity.getKey();
+                                int quantity = sizeAndQuantity.getValue();
+                                ProductCommand productCommand = new ProductCommand();
+                                productCommand.setQte(quantity);
+                                productCommand.setSize(size);
+                                productCommand.setProduct(product);
+                                productCommand.setCommand(command);
 
-                        // Déduction du stock
-                        product.setStock(product.getStock() - quantity); // Mise à jour du stock
-                        productRepository.save(product);
-
-                        return productCommand;
-                    }).toList();
+                                return productCommand;
+                            }))
+                    .toList();
 
             total = productCommands.stream()
-                    .mapToDouble(productCommand -> productCommand.getProduct().getPrice() * productCommand.getQte())
+                    .mapToDouble(pc -> pc.getProduct().getPrice() * pc.getQte())
                     .sum();
-
-            command.setPayment((total == command.getAdvance()) ? Payment.PAY : (total != 0.0 && total > command.getAdvance()) ? Payment.ADVANCE : (command.getAdvance() == 0.0) ? Payment.NO_PAY : null);
+            command.setPayment(
+                    (total == command.getAdvance()) ? Payment.PAY
+                            : (total > command.getAdvance() && command.getAdvance() > 0) ? Payment.ADVANCE
+                            : Payment.NO_PAY);
             command.setTotal(total);
             command.setProductCommands(productCommands);
+            commandRepository.save(command);
+            productCommandRepository.saveAll(productCommands);
 
-            return commandMapper.toDto(commandRepository.save(command));
+            return commandMapper.toDto(command);
         } catch (Exception e) {
             throw new TechnicalException("Une erreur s'est produite lors de la création de la commande : " + e.getMessage());
         }
     }
+
 
     @Override
     public CommandDto commandById(String commandId) {

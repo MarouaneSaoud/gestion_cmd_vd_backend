@@ -8,13 +8,13 @@ import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.UserStatus;
 import com.veri_delice.gestion_cmd_vd_backend.dao.repo.RoleRepository;
 import com.veri_delice.gestion_cmd_vd_backend.dao.repo.UserRepository;
 import com.veri_delice.gestion_cmd_vd_backend.dto.auth.LoginDto;
+import com.veri_delice.gestion_cmd_vd_backend.dto.auth.LoginResponse;
 import com.veri_delice.gestion_cmd_vd_backend.dto.auth.RegisterDto;
 import com.veri_delice.gestion_cmd_vd_backend.dto.auth.UpdatePasswordDto;
 import com.veri_delice.gestion_cmd_vd_backend.exception.error.BusinessException;
 import com.veri_delice.gestion_cmd_vd_backend.service.AuthService;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -35,7 +35,7 @@ public class AuthServiceImpl implements AuthService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public String login(LoginDto loginDto) {
+    public LoginResponse login(LoginDto loginDto) {
         if (userRepository.findByEmail(loginDto.getUsername()).get().getUserStatus().equals(UserStatus.BANNED)) {
             throw new BusinessException(UserResponseMessage.USER_BANNED);
         }
@@ -47,8 +47,9 @@ public class AuthServiceImpl implements AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String token = jwtTokenProvider.generateToken(authentication);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
 
-        return token;
+        return new LoginResponse(token , refreshToken);
     }
     @Override
     public void register(RegisterDto registerDto) {
@@ -82,6 +83,27 @@ public class AuthServiceImpl implements AuthService {
         }
         user.setPassword(passwordEncoder.encode(updatePasswordDto.getNewPassword()));
         userRepository.save(user);
+    }
+    @Override
+    public LoginResponse refreshToken(String refreshToken) {
+        if (!jwtTokenProvider.validateRefreshToken(refreshToken)) {
+            throw new BusinessException(UserResponseMessage.INVALID_REFRESH_TOKEN);
+        }
+
+        String username = jwtTokenProvider.getUsernameFromRefreshToken(refreshToken);
+
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new BusinessException(UserResponseMessage.USER_NOT_FOUND));
+
+        if (user.getUserStatus().equals(UserStatus.BANNED)) {
+            throw new BusinessException(UserResponseMessage.USER_BANNED);
+        }
+
+        String newAccessToken = jwtTokenProvider.generateToken(
+                new UsernamePasswordAuthenticationToken(username, null, user.getRoles())
+        );
+
+        return new LoginResponse(newAccessToken, refreshToken);
     }
 
 }

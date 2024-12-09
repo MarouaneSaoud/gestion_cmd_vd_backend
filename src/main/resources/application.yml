@@ -1,11 +1,13 @@
 spring:
   application:
     name: vd-app
+
   datasource:
     url: jdbc:postgresql://localhost:5432/vd_database
     driverClassName: org.postgresql.Driver
     username: marouane
     password: 123456
+
   jpa:
     show-sql: true
     hibernate:
@@ -14,8 +16,10 @@ spring:
         hibernate:
           dialect: org.hibernate.dialect.PostgreSQLDialect
           format_sql: true
+
 server:
   port: 8090
+
 management:
   endpoints:
     web:

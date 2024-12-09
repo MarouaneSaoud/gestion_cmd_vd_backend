@@ -3,20 +3,19 @@ package com.veri_delice.gestion_cmd_vd_backend.dao.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.veri_delice.gestion_cmd_vd_backend.dao.enumeration.UniteProd;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @SuperBuilder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product extends BaseEntity{
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class Product extends BaseEntity {
 
     @Column(unique = true)
     private String name;
@@ -30,16 +29,15 @@ public class Product extends BaseEntity{
 
     private Double discount;
 
-    private Double Stock;
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY , cascade = CascadeType.ALL)
+    @EqualsAndHashCode.Exclude
+    private Set<ProductSizeStock> productSizeStocks;
 
     private Long barcode;
 
-    @ElementCollection
-    @CollectionTable(name = "product_sizes", joinColumns = @JoinColumn(name = "product_id"))
-    @Column(name = "size")
-    private List<String> size;
-
     private String pictures;
+
+    private Double stock;
 
     @OneToMany(mappedBy = "product")
     private List<ProductCommand> productCommands;

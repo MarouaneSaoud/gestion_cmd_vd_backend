@@ -12,5 +12,6 @@ public class AddCommandRequest {
     private String description;
     private Double advance;
     private Date dateDelivery;
-    private Map<String,Integer> items;
+    private Map<String, Map<String, Integer>> items;
 }
+
